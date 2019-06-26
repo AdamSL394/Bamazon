@@ -1,8 +1,8 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+
+
 var Table = require("cli-table2");
-
-
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -17,41 +17,76 @@ var connection = mysql.createConnection({
     password: "password",
     database: "BamazonDB"
 });
-var table = new Table({
-    head: ['TH 1 label', 'TH 2 label']
-  , colWidths: [100, 200]
+//  First we connect to the database & check for errors, then we run the after connection function 
+connection.connect(function (err) {
+    if (err) throw err;
+    afterConnection();
 });
 
-connection.query("SELECT * FROM products", function(err, res) {
-    if (err) throw err;
-    // Log all results of the SELECT statement
-inquirer.prompt([
-    {
-        name:"choice",
-        type:"rawlist",
-        choices: function(){
-            var listArray =[];
-        for(var i = 0; i < res.length; i++){
-           table.push(res[i].id ,res[i].product_name,res[i].department_name,res[i].price,res[i].stock_quantity)
-   
+function afterConnection() {
+    connection.query("SELECT * FROM products", function (err, res) {
+        // if (err) throw err;
+        var table = new Table({
+            head: ["ID", "Product Name", "Department Name", "Price", "Stock Quantity"],
+            colWidths: [5, 20, 20, 10, 16]
+        });
 
-        }
-        return listArray ;
+
+        // once you have items prompt user what they'd like to bid on
+        inquirer.prompt([
+            {
+                name: "userSelection",
+                type: "input",
+                choices: function () {
+                    for (var i = 0; i < res.length; i++) {
+                        table.push
+                            ([res[i].id, res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity]);
+                    }
+
+                    console.log(table.toString());
+
+                },
+                message: "What ID would you like to bid on",
+            },
+            {
+                type: "input",
+                message: `How many would you like to buy`,//${userSelection}
+                name: "purchase"
+            }
+        ]).then(function (answer) {
+            var productSelection;
+            for (var i = 0; i < res.length; i++) {
+                if (parseInt(answer.userSelection) === res[i].id) {
+                    productSelection = res[i].product_name
+                    var newStock = res[i].stock_quantity - answer.purchase
+                    console.log(newStock)
+                    // res[i].stock_quantity = newStock
+                    creatProduct();
+                    // table.push(res[i].stock_quantity);
+                    // console.log(table.toString());
+                    
+                }
+
+            }
+        })
+    })
+}
+
+function creatProduct(newStock) {
+    console.log("inserting new product...\n")
+    var query = connection.query(
+        "UPDATE products SET ?",
+        {
+            stock_quantity: newStock
         },
-        message:"What ID would you like  to bid on",
-      
-       
-    },
-    {
-        name:"id",
-        type:"input",
-        message:"What ID would you like to buy",
         
-    }
-
+        function (err, res) {
+            if (err) throw err;
+            console.log(res.affectedRows + " product inserted!\n");
+        }
+    )
+    console.log(query.sql);
+    // afterConnection();
   
-]).then(function(){
-    console.log("hi");
-})
+}
 
-})
