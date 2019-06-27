@@ -57,14 +57,18 @@ function afterConnection() {
             var productSelection;
             for (var i = 0; i < res.length; i++) {
                 if (parseInt(answer.userSelection) === res[i].id) {
-                    productSelection = res[i].product_name
+                    productSelection = res[i].id
+                    if (res[i].stock_quantity > 0 ){
+                    console.log("Hi you've bought a product!!")
                     var newStock = res[i].stock_quantity - answer.purchase
                     console.log(newStock)
-                    // res[i].stock_quantity = newStock
-                    creatProduct();
-                    // table.push(res[i].stock_quantity);
-                    // console.log(table.toString());
-                    
+                    console.log(productSelection);
+                    updateStock(newStock, productSelection);
+                    }
+                else {
+                    console.log("Insufficient quantity!")
+                }
+
                 }
 
             }
@@ -72,21 +76,25 @@ function afterConnection() {
     })
 }
 
-function creatProduct(newStock) {
-    console.log("inserting new product...\n")
+function updateStock(newStock, productSelection) {
+    console.log("updating new product...\n")
     var query = connection.query(
-        "UPDATE products SET ?",
-        {
-            stock_quantity: newStock
-        },
-        
+        "UPDATE products SET ? WHERE ?",
+        [
+            {
+                stock_quantity: newStock
+            },
+            {
+                id: productSelection
+            },
+        ],
         function (err, res) {
             if (err) throw err;
-            console.log(res.affectedRows + " product inserted!\n");
+            console.log(res.affectedRows + " product updated!\n");
         }
     )
     console.log(query.sql);
-    // afterConnection();
-  
+    afterConnection();
+
 }
 
