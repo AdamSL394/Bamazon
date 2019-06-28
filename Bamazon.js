@@ -65,8 +65,6 @@ function afterConnection() {
                     var newStock = res[i].stock_quantity - answer.purchase
                     if (newStock > 0) {
                         console.log("Hi you've bought a product!!")
-                        console.log(newStock)
-                        console.log(productSelection);
                         updateStock(newStock, productSelection);
                     }
                     else {
@@ -81,7 +79,7 @@ function afterConnection() {
 }
 
 function updateStock(newStock, productSelection) {
-    console.log("updating new product...\n")
+    // console.log("updating new product...\n")
     var query = connection.query(
         "UPDATE products SET ? WHERE ?",
         [
@@ -94,10 +92,10 @@ function updateStock(newStock, productSelection) {
         ],
         function (err, res) {
             if (err) throw err;
-            console.log(res.affectedRows + " product updated!\n");
+            // console.log(res.affectedRows + " product updated!\n");
         }
     )
-    console.log(query.sql);
+    // console.log(query.sql);
     afterConnection();
 
 }

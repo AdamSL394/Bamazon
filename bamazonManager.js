@@ -188,13 +188,13 @@ function addNewProduct() {
                 product_name: answer.product,
                 department_name: answer.department,
                 price: answer.price,
-                stock_quantity:answer.quantity
+                stock_quantity: answer.quantity
             },
             function (err, res) {
                 if (err) throw err;
                 console.log(res.affectedRows + " product inserted!\n");
                 // Call updateProduct AFTER the INSERT completes
-                
+
             }
         );
 
