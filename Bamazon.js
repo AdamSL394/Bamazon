@@ -66,6 +66,8 @@ function afterConnection() {
                     if (newStock > 0) {
                         console.log("Hi you've bought a product!!")
                         updateStock(newStock, productSelection);
+                        var price = parseInt(answer.purchase)
+                        console.log("The total is: " + res[i].price * price)
                     }
                     else {
                         console.log("Insufficient quantity!")
