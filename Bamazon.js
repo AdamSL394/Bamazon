@@ -1,7 +1,5 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-
-
 var Table = require("cli-table2");
 
 var connection = mysql.createConnection({
@@ -21,6 +19,7 @@ var connection = mysql.createConnection({
 connection.connect(function (err) {
     if (err) throw err;
     afterConnection();
+
 });
 
 function afterConnection() {
@@ -28,7 +27,8 @@ function afterConnection() {
         // if (err) throw err;
         var table = new Table({
             head: ["ID", "Product Name", "Department Name", "Price", "Stock Quantity"],
-            colWidths: [5, 20, 20, 10, 16]
+            colWidths: [5, 20, 20, 10, 16],
+
         });
 
 
@@ -46,29 +46,33 @@ function afterConnection() {
                     console.log(table.toString());
 
                 },
-                message: "What ID would you like to bid on",
+                message: "What ID would you like to purchase",
             },
             {
                 type: "input",
-                message: `How many would you like to buy`,//${userSelection}
+                message: `How many would you like to buy [press q to quit] & enter`,
                 name: "purchase"
             }
         ]).then(function (answer) {
             var productSelection;
+            if (answer.userSelection === "q" || answer.purchase === "q") {
+                process.exit();
+                connection.end();
+            }
             for (var i = 0; i < res.length; i++) {
                 if (parseInt(answer.userSelection) === res[i].id) {
                     productSelection = res[i].id
-                    if (res[i].stock_quantity > 0 ){
-                    console.log("Hi you've bought a product!!")
                     var newStock = res[i].stock_quantity - answer.purchase
-                    console.log(newStock)
-                    console.log(productSelection);
-                    updateStock(newStock, productSelection);
+                    if (newStock > 0) {
+                        console.log("Hi you've bought a product!!")
+                        console.log(newStock)
+                        console.log(productSelection);
+                        updateStock(newStock, productSelection);
                     }
-                else {
-                    console.log("Insufficient quantity!")
-                }
-
+                    else {
+                        console.log("Insufficient quantity!")
+                        afterConnection();
+                    }
                 }
 
             }
@@ -97,4 +101,20 @@ function updateStock(newStock, productSelection) {
     afterConnection();
 
 }
+
+// function deleteProduct(productSelection) {
+//     console.log("Deleting all excess rows...\n");
+//     connection.query(
+//         "DELETE FROM products WHERE ?",
+//         {
+
+//         },
+//         function (err, res) {
+//             if (err) throw err;
+//             console.log(res.affectedRows + " products deleted!\n");
+//             // Call readProducts AFTER the DELETE completes
+
+//         }
+//     );
+// }
 
