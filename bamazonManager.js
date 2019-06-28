@@ -78,7 +78,7 @@ function viewLowInventory(res) {
         colWidths: [5, 20, 20, 10, 16],
     });
     for (var i = 0; i < res.length; i++) {
-        if (res[i].stock_quantity < 300)
+        if (res[i].stock_quantity < 5)
             table.push
                 ([res[i].id, res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity]);
     }
@@ -177,11 +177,6 @@ function addNewProduct() {
             name: "quantity"
         }
     ]).then(function (answer) {
-        console.log(answer.product);
-        console.log(answer.department);
-        console.log(answer.price);
-        console.log(answer.quantity);
-        console.log("Inserting a new product...\n");
         var query = connection.query(
             "INSERT INTO products SET ?",
             {
@@ -192,7 +187,7 @@ function addNewProduct() {
             },
             function (err, res) {
                 if (err) throw err;
-                console.log(res.affectedRows + " product inserted!\n");
+                // console.log(res.affectedRows + " product inserted!\n");
                 // Call updateProduct AFTER the INSERT completes
 
             }
@@ -200,9 +195,10 @@ function addNewProduct() {
 
         // logs the actual query being run
         console.log(query.sql);
+        afterConnection();
 
     })
-    afterConnection();
+   
 
 }
 

@@ -107,7 +107,7 @@ function updateStock(newStock, productSelection) {
 //     connection.query(
 //         "DELETE FROM products WHERE ?",
 //         {
-
+//             id:
 //         },
 //         function (err, res) {
 //             if (err) throw err;
@@ -117,4 +117,5 @@ function updateStock(newStock, productSelection) {
 //         }
 //     );
 // }
+// deleteProduct();
 
