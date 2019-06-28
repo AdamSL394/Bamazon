@@ -123,7 +123,7 @@ function addToInventory(res) {
             if (parseInt(answer.userSelection) === res[i].id) {
                 productSelection = res[i].id
                 var newStock = res[i].stock_quantity
-                parseInt(newStock) 
+                parseInt(newStock)
                 newStock += parseInt(answer.purchase)
                 var query = connection.query(
 
@@ -142,47 +142,68 @@ function addToInventory(res) {
 
                     }
                 );
-                
-                
+
+
             }
-            
+
         }
-        console.log(table.toString());
+
         afterConnection();
     })
 }
 
 
-        function addNewProduct() {
-            inquirer.prompt([
-                {
-                    type: "input",
-                    message: "What is the Name of the product you'd like to add",
-                    name: "product"
-                },
-                {
-                    type: "list",
-                    message: "What is the department would you like to add to",
-                    choices: ["Tops", "Bottoms", "Shoes", "Shirts"],
-                    name: "department"
-                },
-                {
-                    type: "input",
-                    message: "What is the price of the product you are adding ?",
-                    name: "price"
-                },
-                {
-                    type: "input",
-                    message: "What is the quantity you are adding??",
-                    name: "quantity"
-                }
-            ]).then(function (answer) {
-                console.log(answer.product);
-                console.log(answer.department);
-                console.log(answer.price);
-                console.log(answer.quantity);
-            })
-
+function addNewProduct() {
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "What is the Name of the product you'd like to add",
+            name: "product"
+        },
+        {
+            type: "list",
+            message: "What is the department would you like to add to",
+            choices: ["Tops", "Bottoms", "Shoes", "Shirts"],
+            name: "department"
+        },
+        {
+            type: "input",
+            message: "What is the price of the product you are adding ?",
+            name: "price"
+        },
+        {
+            type: "input",
+            message: "What is the quantity you are adding??",
+            name: "quantity"
         }
+    ]).then(function (answer) {
+        console.log(answer.product);
+        console.log(answer.department);
+        console.log(answer.price);
+        console.log(answer.quantity);
+        console.log("Inserting a new product...\n");
+        var query = connection.query(
+            "INSERT INTO products SET ?",
+            {
+                product_name: answer.product,
+                department_name: answer.department,
+                price: answer.price,
+                stock_quantity:answer.quantity
+            },
+            function (err, res) {
+                if (err) throw err;
+                console.log(res.affectedRows + " product inserted!\n");
+                // Call updateProduct AFTER the INSERT completes
+                
+            }
+        );
 
-    
+        // logs the actual query being run
+        console.log(query.sql);
+
+    })
+    afterConnection();
+
+}
+
+
